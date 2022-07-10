@@ -3,10 +3,12 @@ pragma solidity^0.8;
 
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/KeeperCompatibleInterface.sol";
 
 error RAFFLESTACK__NOTENOUGHETHTOENTER();
+error RAFFLESTACK__MONEYTRANSFERFAILED();
 
-contract RaffleStack is VRFConsumerBaseV2 {
+contract RaffleStack is VRFConsumerBaseV2, KeeperCompatibleInterface {
     // State variables
     uint256 private immutable i_entranceFee;
     address payable[] private s_players;
@@ -23,6 +25,7 @@ contract RaffleStack is VRFConsumerBaseV2 {
     // Events
     event RaffleStackEntered(address indexed player);
     event RequestedRaffleWinner(uint256 requestId);
+    event WinnerPicked(address indexed winner);
 
     constructor(
         uint256 entranceFee, 
@@ -46,6 +49,11 @@ contract RaffleStack is VRFConsumerBaseV2 {
         emit RaffleStackEntered(msg.sender);
     }
     // Chainlink Keepers will automatically call this function so that their is no human intervention other than deploying the contract
+
+    function checkUpkeep() external override{}
+
+    function performUpkeep() external override{}
+
     function requestRandomWinner() external {
         // There are two steps before declaring a random winner
         // 1. Request a random number using VRF
@@ -61,13 +69,18 @@ contract RaffleStack is VRFConsumerBaseV2 {
         emit RequestedRaffleWinner(requestId);
     }
 
-    function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) 
+    function fulfillRandomWords(uint256 /*requestId*/, uint256[] memory randomWords) 
         internal 
         override 
     {
         uint256 indexOfWinner = randomWords[0] % s_players.length;
         address recentWinner = s_players[indexOfWinner];
         s_recentWinner = recentWinner;
+        (bool success, ) = recentWinner.call{value: address(this).balance}("");
+        if(!success){
+            revert RAFFLESTACK__MONEYTRANSFERFAILED();
+        }
+        emit WinnerPicked(recentWinner);
     }
 
     // View/Pure functions
