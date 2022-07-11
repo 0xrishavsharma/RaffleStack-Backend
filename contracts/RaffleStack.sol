@@ -79,7 +79,7 @@ contract RaffleStack is VRFConsumerBaseV2, KeeperCompatibleInterface {
     // Chainlink Keepers will automatically call this function so that their is no human intervention other than deploying the contract
     function checkUpkeep( 
         bytes calldata /*checkData*/  //Using bytes as an input parameter we get alot of things that we can do while calling the function
-        ) external override returns(bool upkeepNeeded, bytes memory /* performData */){ // If we write the name of the variable we want to return
+        ) view external override returns(bool upkeepNeeded, bytes memory /* performData */){ // If we write the name of the variable we want to return
         // then if automatically gets returned we don't have to write a return statement inside the function
         // checkUpKeep will return true only if the above/follwing 4 conditons are true.
         bool isOpen =  (RaffleStackState.OPEN == s_raffleStackState); 
@@ -90,7 +90,7 @@ contract RaffleStack is VRFConsumerBaseV2, KeeperCompatibleInterface {
 
     }
 
-    function requestRandomWinner() external {
+    function performUpkeep(bytes calldata /* performDate */) external override{ //Renaming "requestRandomWinner" to "performUpKeep" as we can do both jobs in one function
         // There are two steps before declaring a random winner
         // 1. Request a random number using VRF
         // Chainlink VRF is actually a two step process. First we have to request a random number then we'll recieve the random winner.
