@@ -1,5 +1,3 @@
-/** @type import('hardhat/config').HardhatUserConfig */
-
 const RINKEBY_RPC_URL = process.env.RINKEBY_RPC_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY;
