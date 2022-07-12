@@ -8,3 +8,5 @@
     We need to use Chainlink orcales ==> Randomness(Chainlink VRF), Automation of contract(Chainlink Keepers)
 
  -->
+
+# Raffle Stack - A fully decentralized raffle platform
