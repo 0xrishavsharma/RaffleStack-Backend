@@ -47,8 +47,8 @@ contract RaffleStack is VRFConsumerBaseV2, KeeperCompatibleInterface {
 
   /* Functions */
   constructor(
-    uint256 entranceFee,
     address vrfCoordinatorV2, // This is an external contract we'll be interacting with so we have to deploy mocks on hardhat/ganache network.
+    uint256 entranceFee,
     bytes32 gasLane,
     uint64 subscriptionId,
     uint32 callbackGasLimit,

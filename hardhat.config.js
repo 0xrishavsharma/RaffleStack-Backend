@@ -1,4 +1,4 @@
-const RINKEBY_RPC_URL = process.env.RINKEBY_RPC_URL;
+const RINKEBY_RPC_URL = process.env.RINKEBY_RPC_URL || "https://eth-rinkeby.alchemyapi.io/v2/LvnRUn7s2ipfmZJ55mIHNO2Oa9uTTGpZ";
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY;
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY;
@@ -14,7 +14,7 @@ module.exports = {
       chainId: 4,
       blockConfirmations: 6,
       url: RINKEBY_RPC_URL,
-      accounts: [PRIVATE_KEY],
+      accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : []
     }
   },
   solidity: "0.8.9",
