@@ -1,5 +1,6 @@
 const { network, ethers } = require("hardhat");
 const { developmentChains, networkConfig } = require("../helpful-hardhat-config");
+const { verify } = require("./../utils/verify.js");
 
 module.exports = async function ({ getNamedAccounts, deployments }) {
     const { deploy, log } = deployments;
@@ -24,14 +25,23 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
     }
 
     let entranceFee = networkConfig[chainId]["entranceFee"];
-    let gasLane = networkConfig[chainId]["gasLane"]
-    let args = [vrfCoordinatorAddress, entranceFee, gasLane, subscriptionId];
+    let gasLane = networkConfig[chainId]["gasLane"];
+    let callbackGasLimit = networkConfig[chainId]["callbackGasLimit"];
+    let interval = networkConfig[chainId]["interval"]
+    let args = [vrfCoordinatorAddress, entranceFee, gasLane, subscriptionId, callbackGasLimit, interval];
     const RaffleStack = await deploy("RaffleStack", {
         from: deployer,
         args: args,
         log: true,
         waitConfirmations: network.config.blockConfirmations || 1,
-    } )
-
+    })
     
+    if (!developmentChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {
+        console.log("Verifying...");
+        await verify(raffle.address, args);
+    }
+
+    log("-------------------------------------");
 }
+
+module.exports.tags = ["all", "raffleStack"];

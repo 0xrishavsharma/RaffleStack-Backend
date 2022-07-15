@@ -1,7 +1,7 @@
-const RINKEBY_RPC_URL = process.env.RINKEBY_RPC_URL;
-const PRIVATE_KEY = process.env.PRIVATE_KEY;
-const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY;
-const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY;
+const dotenv = require("dotenv");
+dotenv.config({ path: __dirname + '/.env' });
+
+const { RINKEBY_RPC_URL, PRIVATE_KEY, COINMARKETCAP_API_KEY, ETHERSCAN_API_KEY } = process.env;
 
 module.exports = {
   defaultNetwork: "hardhat",
@@ -14,7 +14,7 @@ module.exports = {
       chainId: 4,
       blockConfirmations: 6,
       url: RINKEBY_RPC_URL,
-      accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : []
+      account: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : []
     }
   },
   solidity: "0.8.9",

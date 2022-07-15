@@ -1,4 +1,4 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8;
 
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
@@ -128,7 +128,7 @@ contract RaffleStack is VRFConsumerBaseV2, KeeperCompatibleInterface {
       i_subscriptionId, // Is the needed to pay for the Oracle gas (Link)
       REQUEST_CONFIRMATIONS, // How many blocks should a Chainlink node should wait before responding
       i_callbackGasLimit, // Protects us from requesting random no. when our code becomes gas intensive
-      NUM_WORDS // Number of random numbers we want to get
+      NUM_WORDS // Random numbers we want to get
     );
     emit RequestedRaffleWinner(requestId);
   }
