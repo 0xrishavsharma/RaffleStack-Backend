@@ -1,5 +1,14 @@
-const dotenv = require("dotenv");
-dotenv.config({ path: __dirname + '/.env' });
+require("@nomiclabs/hardhat-waffle")
+require("@nomiclabs/hardhat-etherscan")
+require("hardhat-deploy")
+require("solidity-coverage")
+require("hardhat-gas-reporter")
+require("hardhat-contract-sizer")
+require("dotenv").config()
+
+
+// const dotenv = require("dotenv");
+// dotenv.config({ path: __dirname + '/.env' });
 
 const { RINKEBY_RPC_URL, PRIVATE_KEY, COINMARKETCAP_API_KEY, ETHERSCAN_API_KEY } = process.env;
 
@@ -17,13 +26,19 @@ module.exports = {
       account: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : []
     }
   },
-  solidity: "0.8.9",
   namedAccounts: {
     deployer: {
-      default: 0,
+        default: 0, // here this will by default take the first account as deployer
     },
-    player: {
-      default: 1,
-    }
-  }
+  },
+  solidity: {
+    compilers: [
+        {
+            version: "0.8.7",
+        },
+        {
+            version: "0.4.24",
+        },
+    ],
+},
 };
