@@ -1,14 +1,11 @@
 require("@nomiclabs/hardhat-waffle")
-require("@nomiclabs/hardhat-etherscan")
+require("@nomiclabs/hardhat-etherscan") 
 require("hardhat-deploy")
 require("solidity-coverage")
-require("hardhat-gas-reporter")
-require("hardhat-contract-sizer")
+// require("hardhat-gas-reporter")
+require("hardhat-contract-sizer") //Outputs contract sizes with Hardhat
 require("dotenv").config()
 
-
-// const dotenv = require("dotenv");
-// dotenv.config({ path: __dirname + '/.env' });
 
 const { RINKEBY_RPC_URL, PRIVATE_KEY, COINMARKETCAP_API_KEY, ETHERSCAN_API_KEY } = process.env;
 

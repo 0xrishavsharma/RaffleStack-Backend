@@ -151,7 +151,7 @@ contract RaffleStack is VRFConsumerBaseV2, KeeperCompatibleInterface {
   }
 
   // View/Pure functions
-  function getEntraceFee() public view returns (uint256) {
+  function getEntranceFee() public view returns (uint256) {
     return i_entranceFee;
   }
 
@@ -182,5 +182,9 @@ contract RaffleStack is VRFConsumerBaseV2, KeeperCompatibleInterface {
 
   function getRequestConfirmations() public pure returns (uint256){
     return REQUEST_CONFIRMATIONS;
+  }
+
+  function getTimeInterval() public view returns (uint256){
+    return i_timeInterval;
   }
 }
