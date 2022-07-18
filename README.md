@@ -10,3 +10,4 @@
  -->
 
 # Raffle Stack - A fully decentralized raffle platform
+It it fully automated, 100% fair and fully decentralised raffle

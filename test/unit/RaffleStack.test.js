@@ -37,6 +37,10 @@ const { developmentChains, networkConfig } = require("../../helpful-hardhat-conf
                 raffleStack.enterRaffleStack({ "value": entranceFee });
                 const firstRafflePlayer = await raffleStack.getPlayer(0);
                 assert.equal(firstRafflePlayer, deployer);
+            }),
+                
+                it("Reverts the transaction when the raffle isn't open", async () => {
+                raffleStack.enterRaffleStack()
             })
         })
 
