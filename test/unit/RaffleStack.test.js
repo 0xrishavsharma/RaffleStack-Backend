@@ -34,7 +34,7 @@ const { developmentChains, networkConfig } = require("../../helpful-hardhat-conf
             }),
             
             it("Record players when they enter", async () => {
-                raffleStack.enterRaffleStack({ "value": entranceFee });
+                await raffleStack.enterRaffleStack({ "value": RaffleStackEntranceFee });
                 const firstRafflePlayer = await raffleStack.getPlayer(0);
                 assert.equal(firstRafflePlayer, deployer);
             }),
@@ -55,6 +55,14 @@ const { developmentChains, networkConfig } = require("../../helpful-hardhat-conf
                 // We should be able to act as a Chainlink keeper and call PerformUpkeep function
                 await raffleStack.performUpkeep([]);
                 await expect(raffleStack.enterRaffleStack({ value: RaffleStackEntranceFee })).to.be.revertedWith("RAFFLESTACK_RAFFLENOTOPEN");
+            }),
+            
+            describe("CheckUpKeep", async () => {
+                it("returns false if people haven't send any Eth", async () => {
+                    await network.provider.send("evm_increaseTime", [interval.toNumber() + 1]);
+                    await network.provider.send("evm_mine", [])
+                    await address(raffleStack.address).balance
+                })
             })
         })
 
