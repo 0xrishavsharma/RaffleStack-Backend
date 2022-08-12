@@ -115,16 +115,41 @@ const { developmentChains, networkConfig } = require("../../helpful-hardhat-conf
                 })
             }),
                 
-                describe("fulfillRandomWords returns a random number, selects the winner, sends the money to winner and emits an event", () => {
-                    beforeEach(async () => {
+            describe("fulfillRandomWords returns a random number, selects the winner, sends the money to winner and emits an event", () => {
+                beforeEach(async () => {
+                    await raffleStack.enterRaffleStack({ value: RaffleStackEntranceFee });
+                    await network.provider.send("evm_increaseTime", [interval.toNumber() + 1]);
+                    await network.provider.request({ method: "evm_mine", params: []});
+                })
+                
+                it("can only be called after performUpkeep ", async () => {
+                    await expect(vrfCoordinatorV2Mock.fulfillRandomWords(1, raffleStack.address)).to.be.revertedWith("nonexistent request");
+                })
+
+                // The largest promise test so far
+                // Doing all the above things in a single test
+                it("picks a winner, resets the lottery and sends money to winner", async () => {
+                    const additionalEntrants = 3;
+                    const startingAccountIndex = 1; //As 0 goes to the deployer
+                    const accounts = await ethers.getSigners();
+                    for (i = startingAccountIndex; i < startingAccountIndex + additionalEntrants; i++){
+                        const accountConnectedToRaffleStack = await raffleStack.connect(accounts[i]);
                         await raffleStack.enterRaffleStack({ value: RaffleStackEntranceFee });
-                        await network.provider.send("evm_increaseTime", [interval.toNumber() + 1]);
-                        await network.provider.request({ method: "evm_mine", params: []});
-                    })
-                    
-                    it("can only be called after performUpkeep ", async () => {
-                    })
+                    }
+                    const startingTimeStamp = raffleStack.getLastTimeStamp();
+                    console.log(startingTimeStamp)
+
+                    // Now what we want to do is a little tricky thing
+                    // 1. Run performUpKeep ( means mock being chainlink keepers)
+                    // 2. Which will call fulfillRandomWords (mock being a Chainlink VRF)
+                    // 3. Waiting for the fulfillRandomWords to be called
+                    //  Now, for us to wait for this to be called we need to set up a Listener. We don't want 
+                    // this test to be finished before the listener has finished listening.
+
+                })
             })
+
+                
         })
 
 
