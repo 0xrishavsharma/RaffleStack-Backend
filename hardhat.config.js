@@ -37,5 +37,8 @@ module.exports = {
             version: "0.4.24",
         },
     ],
-},
+  },
+  mocha: {
+    timeout: 200000, //200 seconds max
+  }
 };

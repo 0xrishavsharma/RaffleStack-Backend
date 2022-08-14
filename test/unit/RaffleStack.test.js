@@ -108,7 +108,6 @@ const { developmentChains, networkConfig } = require("../../helpful-hardhat-conf
                     const txResponse = await raffleStack.performUpkeep([]);
                     const txReceipt = await txResponse.wait(1);
                     const requestId = await txReceipt.events[1].args.requestId;
-                    console.log("This is the requestId: ", requestId);
                     const raffleStackState = await raffleStack.getRaffleStackState();
                     assert.equal(raffleStackState.toString(), "1");
                     assert(requestId.toNumber() > 0)
@@ -137,15 +136,47 @@ const { developmentChains, networkConfig } = require("../../helpful-hardhat-conf
                         await raffleStack.enterRaffleStack({ value: RaffleStackEntranceFee });
                     }
                     const startingTimeStamp = raffleStack.getLastTimeStamp();
-                    console.log(startingTimeStamp)
 
-                    // Now what we want to do is a little tricky thing
-                    // 1. Run performUpKeep ( means mock being chainlink keepers)
+                    // Now what we want to do is a little tricky
+                    // 1. Run performUpKeep ( means mock being Chainlink keepers)
                     // 2. Which will call fulfillRandomWords (mock being a Chainlink VRF)
                     // 3. Waiting for the fulfillRandomWords to be called
                     //  Now, for us to wait for this to be called we need to set up a Listener. We don't want 
                     // this test to be finished before the listener has finished listening.
+                    await new Promise(async (resolve, reject) => {
+                        raffleStack.once("WinnerPicked", async () => { 
+                            console.log("Found the event!")
+                            try {
+                                // Here we'll insert all of our assert statements
+                                const recentWinner = await raffleStack.getRecentWinner();
+                                console.log("Recent winner is:", recentWinner);
+                                console.log("Player 1 is:", accounts[0].address);
+                                console.log("Player 2 is:", accounts[1].address);
+                                console.log("Player 3 is:", accounts[2].address);
+                                console.log("Player 4 is:", accounts[3].address);
+                                const winnerEndingBalance = await accounts[0].getBalance();
+                                const raffleStackState = await raffleStack.getRaffleStackState();
+                                const numPlayers = await raffleStack.getNumberOfPlayers();
+                                const lastTimeStamp = await raffleStack.getLastTimeStamp();
 
+                                assert.equal(numPlayers.toString(), "0");
+                                assert.equal(raffleStackState.toString(), "0");
+                                assert(lastTimeStamp < startingTimeStamp);
+
+                                assert.equal( winnerEndingBalance.toString(), winnerStartingBalance.add(RaffleStackEntranceFee.mul(additionalEntrants).add(RaffleStackEntranceFee).toString()))
+                            } catch (e) {
+                                console.log("The promise got rejected with the following error:", e)
+                                reject()
+                            }
+                            resolve()    //But what if the this never get resolved and their is an issue we have to reject this
+                                         //to do that we will define a timeout in our config file and this will run reject() the promise after that timeout.
+                        });
+                        // Below we'll fire the event and listener will pick it up and resolve
+                        const tx = await raffleStack.performUpkeep([]);
+                        const txReceipt = await tx.wait(1);
+                        const winnerStartingBalance = await accounts[0].getBalance();
+                        await vrfCoordinatorV2Mock.fulfillRandomWords(txReceipt.events[1].args.requestId, raffleStack.address)
+                    })
                 })
             })
 
