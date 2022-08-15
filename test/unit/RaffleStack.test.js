@@ -10,7 +10,7 @@ const { developmentChains, networkConfig } = require("../../helpful-hardhat-conf
 
         beforeEach(async () => {
             deployer = (await getNamedAccounts()).deployer;
-            await deployments.fixture(["all"]);
+            await deployments.fixture(["all"]); //Deploys or run all scripts with an "all" tag 
             raffleStack = await ethers.getContract("RaffleStack", deployer);
             vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock", deployer);
             RaffleStackEntranceFee = await raffleStack.getEntranceFee();
@@ -163,7 +163,7 @@ const { developmentChains, networkConfig } = require("../../helpful-hardhat-conf
                                 assert.equal(raffleStackState.toString(), "0");
                                 assert(lastTimeStamp < startingTimeStamp);
 
-                                assert.equal( winnerEndingBalance.toString(), winnerStartingBalance.add(RaffleStackEntranceFee.mul(additionalEntrants).add(RaffleStackEntranceFee).toString()))
+                                assert.equal( winnerEndingBalance.toString(), winnerStartingBalance.add(RaffleStackEntranceFee.mul(additionalEntrants).add(RaffleStackEntranceFee)).toString())
                             } catch (e) {
                                 console.log("The promise got rejected with the following error:", e)
                                 reject()
